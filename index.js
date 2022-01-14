@@ -23,8 +23,8 @@ const getReviews = async (page) => {
   const reviewsArray = []
   rawReviews.each((i, review) => {
     const val = $(review).attr('href')
-    reviewsArray.push('review:', val)
-    console.log(val)
+    reviewsArray.push(val)
+    console.log('review:', val)
   })
   return reviewsArray
 }
@@ -46,10 +46,17 @@ const getComments = async (link, page) => {
   return commentsArray
 }
 
+const getQueryTerm = () => {
+  const query = process.argv.find(arg => arg.includes('--query'))
+  if (!query) {
+    throw new Error('No query term provided. Please use --query=<term>')
+  }
+  return query.substring(8)
+}
 
 (async () => {
   try {
-    const SEARCH_TERM = 'halo'
+    const SEARCH_TERM = getQueryTerm()
     console.log(`${mainUrl}/buscar/review/q/${encodeURIComponent(SEARCH_TERM)}`)
     const manager = await configureBrowser(`${mainUrl}/buscar/review/q/${encodeURIComponent(SEARCH_TERM)}`)
     const reviewLinks = await getReviews(manager.page)
